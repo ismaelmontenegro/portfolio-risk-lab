@@ -6,6 +6,7 @@ Run with Python 3.11 or later, from this directory:
 
 ```sh
 python audit.py
+python performance_reconciliation.py
 python -m unittest -v
 ```
 
@@ -28,7 +29,7 @@ Separate modules will cover ingestion, event accounting, return construction, ri
 
 ## Next steps
 
-1. Resolve cash residual and timestamp semantics using detailed records.
+1. Cash reconciles at cent precision. The performance bridge now reconciles using signed taxes; verify timestamp semantics before daily accounting.
 2. Audit a historical market-data source against all historical ISINs; require daily data, currency/exchange mapping and documented dividend/split treatment.
 3. Reconstruct daily valuations; reconcile performance and external flows at a declared portfolio boundary.
 4. Implement and backtest a Gaussian baseline and multivariate block bootstrap before adding conditional-volatility models.

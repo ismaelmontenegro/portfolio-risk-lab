@@ -7,6 +7,7 @@ from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from statistics import median
+from performance_reconciliation import build_report
 
 ROOT = Path(__file__).resolve().parent
 D = lambda x: Decimal(str(x))
@@ -79,6 +80,7 @@ def main():
     out=ROOT/'reports'
     out.mkdir(exist_ok=True)
     result['one_year_coverage'] = year_cover
+    result['performance_reconciliation'] = build_report(b, details)
     (out/'audit.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
     def table(rows, columns):
         return '<table><thead><tr>'+''.join('<th>'+html.escape(k)+'</th>' for k in columns)+'</tr></thead><tbody>'+''.join('<tr>'+''.join('<td>'+html.escape(str(row.get(k,'')))+'</td>' for k in columns)+'</tr>' for row in rows)+'</tbody></table>'
@@ -89,6 +91,7 @@ def main():
     <h2>Reconciliation</h2><p>Transaction range: {result['transaction_start'][:10]} to {result['transaction_end'][:10]}. All returned pages exhausted; this does not establish history before the earliest record. Assumed opening holdings and cash: zero.</p>
     {table([{'check':k,'value':v} for k,v in r.items() if not isinstance(v,list)],['check','value'])}
     <p>Quote-based valuations use asynchronous mid-prices; a discrepancy against the broker valuation is not automatically an accounting error. Internal transfers are external flows at the broker-portfolio boundary, but may be internal at the whole-account boundary.</p>
+    <h2>Performance bridge</h2><p>Status: {result['performance_reconciliation']['status']}. Net taxes: €{result['performance_reconciliation']['net_tax']}. Unexplained residual: €{result['performance_reconciliation']['unexplained_residual']}. <a href="performance_reconciliation.html">View transaction evidence</a>.</p>
     <h2>Holdings</h2>{table(sorted(values,key=lambda v:-v['value']),['name','isin','quantity','value'])}
     <h2>Quantity reconstruction, including exited positions</h2>{table(r['positions'],['isin','ledger','current','difference'])}
     <h2>Historical chart coverage</h2>{table(cover,['name','points','first','last','median_gap_days','missing','nonpositive'])}
