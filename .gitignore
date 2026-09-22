@@ -3,3 +3,5 @@ reports/
 .venv/
 __pycache__/
 .env
+audit-run.txt
+.idea/
